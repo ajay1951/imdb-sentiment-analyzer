@@ -4,30 +4,19 @@ import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import nltk # It's good practice to import nltk as well
+import nltk
 
 # --- Download NLTK Data Packages ---
-# This is the crucial step for Streamlit Cloud deployment.
-# It ensures the necessary resources are available when the app starts.
-try:
-    nltk.data.find('corpora/stopwords')
-except nltk.downloader.DownloadError:
-    nltk.download('stopwords')
-try:
-    nltk.data.find('corpora/wordnet')
-except nltk.downloader.DownloadError:
-    nltk.download('wordnet')
-try:
-    nltk.data.find('corpora/omw-1.4')
-except nltk.downloader.DownloadError:
-    nltk.download('omw-1.4')
-
+# This is the simplest and most effective method for Streamlit Cloud.
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 # --- Load the saved model and vectorizer ---
 # These files were created in Phase A.
 try:
     vectorizer = joblib.load('tfidf_vectorizer.joblib')
-    model = joblib.load('sentiment_model.joblib')
+    model = job.load('sentiment_model.joblib')
 except FileNotFoundError:
     st.error("Model files not found. Please ensure they are in your GitHub repository.")
     st.stop()
