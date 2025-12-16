@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+import nltk
 
 # --- Load the saved model and vectorizer ---
 # These files were created in Phase A.
@@ -63,4 +64,5 @@ if st.button("Analyze Sentiment"):
         else:
             st.error("This looks like a NEGATIVE review. 😞")
     else:
+
         st.warning("Please enter a movie review to analyze.")
