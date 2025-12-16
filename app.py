@@ -4,21 +4,36 @@ import re
 from bs4 import BeautifulSoup
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-import nltk
+import nltk # It's good practice to import nltk as well
+
+# --- Download NLTK Data Packages ---
+# This is the crucial step for Streamlit Cloud deployment.
+# It ensures the necessary resources are available when the app starts.
+try:
+    nltk.data.find('corpora/stopwords')
+except nltk.downloader.DownloadError:
+    nltk.download('stopwords')
+try:
+    nltk.data.find('corpora/wordnet')
+except nltk.downloader.DownloadError:
+    nltk.download('wordnet')
+try:
+    nltk.data.find('corpora/omw-1.4')
+except nltk.downloader.DownloadError:
+    nltk.download('omw-1.4')
+
 
 # --- Load the saved model and vectorizer ---
 # These files were created in Phase A.
-# Ensure they are in the same folder as this script.
 try:
     vectorizer = joblib.load('tfidf_vectorizer.joblib')
     model = joblib.load('sentiment_model.joblib')
 except FileNotFoundError:
-    st.error("Model files not found. Please run the 'train_and_save_model.py' script first.")
+    st.error("Model files not found. Please ensure they are in your GitHub repository.")
     st.stop()
 
 # --- Re-create the preprocessing function ---
 # This MUST be identical to the function used in the training script.
-# Your training script used Lemmatization, so we use it here too.
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
 
@@ -38,31 +53,22 @@ st.write("This web app uses a pre-trained Machine Learning model to predict whet
 st.write("Enter a review below and click 'Analyze Sentiment'.")
 
 # --- Create the user interface elements ---
-# Text area for user input
 user_input = st.text_area(
-    "Movie Review:", 
+    "Movie Review:",
     "I saw this film last week and it was phenomenal! The acting was convincing and the plot was gripping from start to finish. I would highly recommend it to anyone.",
     height=150
 )
 
-# Button to trigger the prediction
 if st.button("Analyze Sentiment"):
     if user_input.strip():
-        # 1. Preprocess the user's input text
         cleaned_input = preprocess_text(user_input)
-        
-        # 2. Transform the text using the loaded TF-IDF vectorizer
         input_vector = vectorizer.transform([cleaned_input])
-        
-        # 3. Predict the sentiment using the loaded model
         prediction = model.predict(input_vector)
         
-        # 4. Display the result
         st.subheader("Analysis Result")
         if prediction[0] == 1:
             st.success("This looks like a POSITIVE review! 😊")
         else:
             st.error("This looks like a NEGATIVE review. 😞")
     else:
-
         st.warning("Please enter a movie review to analyze.")
